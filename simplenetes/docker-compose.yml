@@ -1,0 +1,32 @@
+services:
+  # server:
+  #   build: ./Simplenetes.Server
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - DATABASE__HOST=database
+  #   depends_on:
+  #     - database
+
+  # controller:
+  #   build: ./Simplenetes.Controller
+  #   environment:
+  #     - SERVER__HOST=server
+  #   volumes:
+  #     - type: bind
+  #       source: /var/run/docker.sock
+  #       target: /var/run/docker.sock
+  #   depends_on:
+  #     - server
+
+  database:
+    image: postgres:16.2
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: simplenetes
+    volumes:
+    - type: bind
+      source: ./setup.sql
+      target: /docker-entrypoint-initdb.d/setup.sql
+    ports:
+      - "5432:5432"
