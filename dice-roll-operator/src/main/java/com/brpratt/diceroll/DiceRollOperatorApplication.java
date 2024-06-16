@@ -32,9 +32,12 @@ public class DiceRollOperatorApplication {
 		}
 
 		@Bean
-		public SharedIndexInformer<DiceRoll> podInformer(ApiClient apiClient, SharedInformerFactory sharedInformerFactory) {
-			GenericKubernetesApi<DiceRoll, DiceRollList> genericApi =
-				new GenericKubernetesApi<>(DiceRoll.class, DiceRollList.class, "example.com", "v1", "dicerolls", apiClient);
+		public GenericKubernetesApi<DiceRoll, DiceRollList> diceRollApi(ApiClient apiClient) {
+			return new GenericKubernetesApi<>(DiceRoll.class, DiceRollList.class, "example.com", "v1", "dicerolls", apiClient);
+		}
+
+		@Bean
+		public SharedIndexInformer<DiceRoll> podInformer(GenericKubernetesApi<DiceRoll, DiceRollList> genericApi, SharedInformerFactory sharedInformerFactory) {
 			return sharedInformerFactory.sharedIndexInformerFor(genericApi, DiceRoll.class, 0);
 		}
 

@@ -89,6 +89,11 @@ public class DiceRoll implements KubernetesObject {
         private String die;
         private int value;
 
+        public Result(String die, int value) {
+            this.die = die;
+            this.value = value;
+        }
+
         public String getDie() {
             return die;
         }
