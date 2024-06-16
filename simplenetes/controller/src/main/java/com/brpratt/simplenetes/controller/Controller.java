@@ -42,10 +42,6 @@ public class Controller {
         var desired = getDesiredContainers();
         var actual = getActualContainers();       
         var actions = calculateActions(desired, actual);
-
-        logger.info(desired.toString());
-        logger.info(actual.toString());
-        logger.info(actions.toString());
         process(actions);
     }
 
