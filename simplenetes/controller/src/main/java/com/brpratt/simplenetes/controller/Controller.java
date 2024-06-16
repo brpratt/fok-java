@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,8 +25,8 @@ public class Controller {
     private final RestClient serverClient;
     private final DockerClient dockerClient;
 
-    public Controller(RestClient.Builder builder) {
-        this.serverClient = builder.baseUrl("http://localhost:8080").build();
+    public Controller(RestClient.Builder builder, @Value("${simplenetes.server-host}") String serverHost) {
+        serverClient = builder.baseUrl(String.format("http://%s:8080", serverHost)).build();
 
         var dockerConfig = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
 
@@ -34,7 +35,7 @@ public class Controller {
             .sslConfig(dockerConfig.getSSLConfig())
             .build();
 
-        this.dockerClient = DockerClientImpl.getInstance(dockerConfig, dockerHttpClient);
+        dockerClient = DockerClientImpl.getInstance(dockerConfig, dockerHttpClient);
     }
 
     @Scheduled(fixedRate = 1000)

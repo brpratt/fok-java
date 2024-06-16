@@ -8,16 +8,16 @@ services:
     depends_on:
       - database
 
-  # controller:
-  #   build: ./Simplenetes.Controller
-  #   environment:
-  #     - SERVER__HOST=server
-  #   volumes:
-  #     - type: bind
-  #       source: /var/run/docker.sock
-  #       target: /var/run/docker.sock
-  #   depends_on:
-  #     - server
+  controller:
+    build: ./controller
+    environment:
+      - SERVER_HOST=server
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    depends_on:
+      - server
 
   database:
     image: postgres:16.2
