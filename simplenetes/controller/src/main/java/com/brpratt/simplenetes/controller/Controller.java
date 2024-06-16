@@ -1,22 +1,26 @@
 package com.brpratt.simplenetes.controller;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 
 @Component
 public class Controller {
+    
+    private final Logger logger = LoggerFactory.getLogger(Controller.class);
     private final RestClient serverClient;
     private final DockerClient dockerClient;
 
@@ -36,8 +40,12 @@ public class Controller {
     @Scheduled(fixedRate = 1000)
     public void reconcile() {
         var desired = getDesiredContainers();
-        var actual = getActualContainers();
+        var actual = getActualContainers();       
         var actions = calculateActions(desired, actual);
+
+        logger.info(desired.toString());
+        logger.info(actual.toString());
+        logger.info(actions.toString());
         process(actions);
     }
 
@@ -50,10 +58,10 @@ public class Controller {
 
     private List<Container> getActualContainers() {
         return dockerClient.listContainersCmd()
-            .withLabelFilter(Arrays.asList("simplenetes"))
+            .withLabelFilter(Map.of("simplenetes", "true"))
             .exec()
             .stream()
-            .map(c -> new Container(c.getNames()[0], c.getImage()))
+            .map(c -> new Container(c.getNames()[0].substring(1), c.getImage()))
             .toList();
     }
 
@@ -79,16 +87,26 @@ public class Controller {
     }
 
     private void createContainer(Container container) {
-        dockerClient.pullImageCmd(container.image()).wait();
+        try {
+            dockerClient.pullImageCmd(container.image())
+                .exec(new ResultCallback.Adapter<>() { })
+                .awaitCompletion();
+        } catch (InterruptedException e) {
+            logger.error("Failed to pull image: {}", container.image());
+            return;
+        }
 
         dockerClient.createContainerCmd(container.image())
             .withName(container.name())
             .withLabels(Map.of("simplenetes", "true"))
             .exec();
+
+        dockerClient.startContainerCmd(container.name()).exec();
     }
 
     private void deleteContainer(Container container) {
         dockerClient.removeContainerCmd(container.name())
+            .withForce(true)
             .exec();
     }
 }
