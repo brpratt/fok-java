@@ -19,7 +19,7 @@ $ docker compose up
 
 ### Running the components independently
 
-The `Simplenetes.Server` and `Simplenetes.Controller` services can run outside of Docker. This is useful if you want to make code changes and/or use a debugger
+The `simplenetes-server` and `simplenetes-controller` services can run outside of Docker. This is useful if you want to make code changes and/or use a debugger
 
 You typically want to start the database first:
 
@@ -27,16 +27,16 @@ You typically want to start the database first:
 $ docker compose up database
 ```
 
-Then, you can run the projects using `dotnet run` or from within your IDE:
+Then, you can run the projects using `mvn` or from within your IDE:
 
 ```
-$ dotnet run --project Simplenetes/Simplenetes.Server.csproj
-$ dotnet run --project Simplenetes/Simplenetes.Controller.csproj
+$ mvn --projects server spring-boot:run
+$ mvn --projects controller spring-boot:run
 ```
 
-## Simplenetes.Server
+## simplenetes-server
 
-The API server listens on port 5000 and exposes the following endpoints:
+The API server listens on port 8080 and exposes the following endpoints:
 
 ```
    GET /containers        - get all containers
@@ -50,7 +50,7 @@ The container resource manipulated by these endpoints is a simple object with tw
 - `name`: the name of the container
 - `image`: the image to use for the container
 
-## Simplenetes.Controller
+## simplenetes-controller
 
 The controller will use the local docker socket to create and delete containers as appropriate. Containers managed by the controller have the `simplenetes` label, so any containers without this label are ignored by the controller.
 
@@ -61,13 +61,13 @@ The controller will use the local docker socket to create and delete containers 
 macOS/Linux:
 
 ```
-$ curl -X POST -H 'Content-Type: application/json' http://localhost:5000/containers -d '{ "name": "redis", "image": "redis:latest" }'
+$ curl -X POST -H 'Content-Type: application/json' http://localhost:8080/containers -d '{ "name": "redis", "image": "redis:latest" }'
 ```
 
 Windows:
 
 ```
-> Invoke-RestMethod -Method Post -ContentType application/json -Uri http://localhost:5000/containers -Body '{ "name": "redis", "image": "redis:latest" }'
+> Invoke-RestMethod -Method Post -ContentType application/json -Uri http://localhost:8080/containers -Body '{ "name": "redis", "image": "redis:latest" }'
 ```
 
 ### Get all of the containers:
@@ -75,13 +75,13 @@ Windows:
 macOS/Linux:
 
 ```
-$ curl http://localhost:5000/containers
+$ curl http://localhost:8080/containers
 ```
 
 Windows:
 
 ```
-> Invoke-RestMethod -Uri http://localhost:5000/containers
+> Invoke-RestMethod -Uri http://localhost:8080/containers
 ```
 
 ### Delete a container called `redis`:
@@ -89,11 +89,11 @@ Windows:
 macOS/Linux:
 
 ```
-$ curl -X DELETE http://localhost:5000/containers/redis
+$ curl -X DELETE http://localhost:8080/containers/redis
 ```
 
 Windows:
 
 ```
-> Invoke-RestMethod -Method Delete -Uri http://localhost:5000/containers/redis
+> Invoke-RestMethod -Method Delete -Uri http://localhost:8080/containers/redis
 ```
