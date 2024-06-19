@@ -2,15 +2,11 @@ package com.brpratt.simplenetes.controller;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientImpl;
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,19 +19,9 @@ public class Controller {
   private final RestClient serverClient;
   private final DockerClient dockerClient;
 
-  public Controller(
-      RestClient.Builder builder, @Value("${simplenetes.server-host}") String serverHost) {
-    serverClient = builder.baseUrl(String.format("http://%s:8080", serverHost)).build();
-
-    var dockerConfig = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
-
-    var dockerHttpClient =
-        new ApacheDockerHttpClient.Builder()
-            .dockerHost(dockerConfig.getDockerHost())
-            .sslConfig(dockerConfig.getSSLConfig())
-            .build();
-
-    dockerClient = DockerClientImpl.getInstance(dockerConfig, dockerHttpClient);
+  public Controller(DockerClient dockerClient, RestClient serverClient) {
+    this.dockerClient = dockerClient;
+    this.serverClient = serverClient;
   }
 
   @Scheduled(fixedRate = 1000)
