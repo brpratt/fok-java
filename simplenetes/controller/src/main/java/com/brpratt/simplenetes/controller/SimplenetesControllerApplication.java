@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 public class SimplenetesControllerApplication {
-    public static void main(String[] args) {
-		SpringApplication.run(SimplenetesControllerApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(SimplenetesControllerApplication.class, args);
+  }
 }
