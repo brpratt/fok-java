@@ -65,11 +65,11 @@ public class DiceRollReconciler implements Reconciler {
 
   private void roll(DiceRoll roll) {
     var dice = roll.getSpec().getDice();
-    var results = dice.stream().map(die -> roll.new Result(die, roll(die))).toList();
+    var results = dice.stream().map(die -> new DiceRoll.Result(die, roll(die))).toList();
     var total = results.stream().mapToInt(r -> r.getValue()).sum();
 
     if (roll.getStatus() == null) {
-      roll.setStatus(roll.new Status());
+      roll.setStatus(new DiceRoll.Status());
     }
 
     roll.getStatus().setTotal(total);

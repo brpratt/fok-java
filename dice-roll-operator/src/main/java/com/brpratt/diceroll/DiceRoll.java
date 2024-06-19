@@ -51,7 +51,7 @@ public class DiceRoll implements KubernetesObject {
     this.status = status;
   }
 
-  public class Spec {
+  public static class Spec {
     private List<String> dice;
 
     public List<String> getDice() {
@@ -63,7 +63,7 @@ public class DiceRoll implements KubernetesObject {
     }
   }
 
-  public class Status {
+  public static class Status {
     private int total;
     private List<Result> results;
 
@@ -84,7 +84,7 @@ public class DiceRoll implements KubernetesObject {
     }
   }
 
-  public class Result {
+  public static class Result {
     private String die;
     private int value;
 
